@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Portafoglio — Rutigliano Filippo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F0F0F; --surface: #1A1A1A; --surface2: #222222; --border: #2A2A2A;
+    --text: #F0F0F0; --text2: #888; --text3: #555;
+    --red: #E84040; --green: #2ECC71; --amber: #F0A500;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; padding: 0 0 60px; }
+  .header { border-bottom: 1px solid var(--border); padding: 24px 24px 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .agent-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .agent-name { font-size: 18px; font-weight: 600; color: var(--text); }
+  .header-right { text-align: right; }
+  .week-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .week-date { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); }
+  .kpi { padding: 20px 24px; border-right: 1px solid var(--border); }
+  .kpi:last-child { border-right: none; }
+  .kpi-label { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+  .kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 500; }
+  .kpi-value.neutral { color: var(--text); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.green { color: var(--green); }
+  .section { padding: 28px 24px 0; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .section-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); }
+  .section-count { font-size: 11px; color: var(--text3); margin-left: auto; }
+  .client-list { display: flex; flex-direction: column; gap: 2px; }
+  .client-row { background: var(--surface); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s; }
+  .client-row:hover { background: var(--surface2); }
+  .client-rank { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); width: 18px; flex-shrink: 0; text-align: right; }
+  .client-info { flex: 1; min-width: 0; }
+  .client-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .client-cat { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .client-numbers { text-align: right; flex-shrink: 0; }
+  .client-loss { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; color: var(--red); }
+  .client-pct { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .sparito-row { background: var(--surface); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
+  .sparito-row:hover { background: var(--surface2); }
+  .sparito-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; opacity: 0.6; }
+  .sparito-info { flex: 1; min-width: 0; }
+  .sparito-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sparito-detail { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .sparito-value { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text2); flex-shrink: 0; }
+  .summary { margin: 28px 24px 0; background: var(--surface); border-radius: 10px; padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .summary-item-label { font-size: 10px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .summary-item-value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 500; }
+  .footer { margin: 28px 24px 0; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; }
+  @media (max-width: 480px) {
+    .kpi-row { grid-template-columns: 1fr; }
+    .kpi { border-right: none; border-bottom: 1px solid var(--border); }
+    .kpi:last-child { border-bottom: none; }
+    .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .header-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <div class="agent-label">Agente di commercio</div>
+    <div class="agent-name">Rutigliano Filippo</div>
+  </div>
+  <div class="header-right">
+    <div class="week-label">Report settimanale</div>
+    <div class="week-date">08 luglio 2025</div>
+  </div>
+</div>
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-label">Fatturato anno corrente</div><div class="kpi-value neutral">€ 307.895</div></div>
+  <div class="kpi"><div class="kpi-label">Fatturato eroso (clienti in calo)</div><div class="kpi-value red">− € 18.851</div></div>
+  <div class="kpi"><div class="kpi-label">Crescita anno su anno</div><div class="kpi-value green">+5,7%</div></div>
+</div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-dot" style="background: var(--red);"></div>
+    <div class="section-title">Clienti in calo — da richiamare</div>
+    <div class="section-count">10 priorità</div>
+  </div>
+  <div class="client-list">
+    <div class="client-row">
+      <div class="client-rank">1</div>
+      <div class="client-info">
+        <div class="client-name">PANIFICIO ANTERI - GIOIA</div>
+        <div class="client-cat">Sweet Pastry / Gelato / Savory Bakery</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 4.534</div>
+        <div class="client-pct">−26,5%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">2</div>
+      <div class="client-info">
+        <div class="client-name">MORI BAR TABACCHI</div>
+        <div class="client-cat">Sweet Pastry / Gelato / Savory Bakery</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 1.843</div>
+        <div class="client-pct">−47,0%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">3</div>
+      <div class="client-info">
+        <div class="client-name">DEEP MILANO GOLD</div>
+        <div class="client-cat">Sweet Pastry</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 3.038</div>
+        <div class="client-pct">−73,8%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">4</div>
+      <div class="client-info">
+        <div class="client-name">BAR LIPARI (272872)</div>
+        <div class="client-cat">Sweet Pastry / Gelato / Savory Bakery</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 1.367</div>
+        <div class="client-pct">−29,8%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">5</div>
+      <div class="client-info">
+        <div class="client-name">BAR GIOIA</div>
+        <div class="client-cat">Sweet Pastry / Savory Bakery / Gelato</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 1.369</div>
+        <div class="client-pct">−10,7%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">6</div>
+      <div class="client-info">
+        <div class="client-name">HOTEL MARCONI</div>
+        <div class="client-cat">Sweet Pastry / Savory Bakery</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 1.257</div>
+        <div class="client-pct">−21,3%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">7</div>
+      <div class="client-info">
+        <div class="client-name">VIOLA CAFFE'</div>
+        <div class="client-cat">Sweet Pastry / Gelato / Meal-Other</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 1.120</div>
+        <div class="client-pct">−27,3%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">8</div>
+      <div class="client-info">
+        <div class="client-name">CHURCHILL</div>
+        <div class="client-cat">Sweet Pastry / Gelato</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 803</div>
+        <div class="client-pct">−19,3%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">9</div>
+      <div class="client-info">
+        <div class="client-name">HOTEL BOLZANO</div>
+        <div class="client-cat">Sweet Pastry / Savory Bakery / Patisserie</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 840</div>
+        <div class="client-pct">−11,6%</div>
+      </div>
+    </div>
+    <div class="client-row">
+      <div class="client-rank">10</div>
+      <div class="client-info">
+        <div class="client-name">BUBBLE TEA</div>
+        <div class="client-cat">Sweet Pastry</div>
+      </div>
+      <div class="client-numbers">
+        <div class="client-loss">− € 562</div>
+        <div class="client-pct">−58,0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section" style="margin-top: 28px;">
+  <div class="section-header">
+    <div class="section-dot" style="background: var(--amber);"></div>
+    <div class="section-title">Clienti spariti — zero ordini quest'anno</div>
+    <div class="section-count">22 clienti</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">ANTERI INT SALESIANI - BAR DON BOSCO DESTRA</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 6.916 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">XXXFGBAR ESPRESSO</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 5.202 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">ANTERI INT SALESIANI - BAR SANT'AMBROGIO SINISTRA</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 7.121 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">XXXFGBAR LIBERTY</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 4.463 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">XXXFG BAR INTER CAFFE</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 2.830 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">PANIFICIO STORICO VAILATI</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 397 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">RE ITALIAN BAKERY</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 3.418 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">LOGICAL TEAM C/O CISL MILANO</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 1.689 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">RISTORANTE CER GREEN</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 1.363 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">BAR CINQUESTELLE</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 2.135 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">DANY BAR</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 1.966 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">PANIFICIO LORUSSO</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 723 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">SAJID MINIMARKET</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 224 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">CINCINNATO BARV</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 405 AP</div>
+  </div>
+  <div class="sparito-row">
+    <div class="sparito-indicator"></div>
+    <div class="sparito-info">
+      <div class="sparito-name">NEW YORK LOUNGE BAR</div>
+      <div class="sparito-detail">Attivo fino a fine anno scorso</div>
+    </div>
+    <div class="sparito-value">€ 627 AP</div>
+  </div>
+</div>
+<div class="summary">
+  <div class="summary-item">
+    <div class="summary-item-label">Clienti in calo &gt;10%</div>
+    <div class="summary-item-value" style="color: var(--red);">18 posizioni</div>
+  </div>
+  <div class="summary-item">
+    <div class="summary-item-label">Clienti persi o a zero</div>
+    <div class="summary-item-value" style="color: var(--amber);">22 posizioni</div>
+  </div>
+</div>
+<div class="footer">
+  <span>Generato da Agente Portfolio · Claude Sonnet 4.6</span>
+  <span>Dati aggiornati al 08 luglio 2025</span>
+</div>
+</body>
+</html>
